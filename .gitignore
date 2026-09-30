@@ -1,0 +1,12 @@
+node_modules
+plan.md
+claude.md
+dist
+coverage
+.env
+*.log
+.DS_Store
+README2.md
+tradeoff.md
+Readme2.md
+interview.md

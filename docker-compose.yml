@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: car-inventory-mongo
+    restart: unless-stopped
+    command: ["--quiet"] # suppress verbose connection/access logs
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: car-inventory-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_started
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: --dns-result-order=ipv4first
+      PORT: 4000
+      MONGODB_URI: mongodb://mongo:27017/car-inventory
+      NHTSA_BASE_URL: https://vpic.nhtsa.dot.gov/api/vehicles
+      NHTSA_INGESTION_PERSIST_BATCH_SIZE: 50
+      NHTSA_REQUEST_TIMEOUT_MS: 10000
+      NHTSA_INGESTION_SKIP_EXISTING: true
+      LOG_LEVEL: info
+
+volumes:
+  mongo-data:
